@@ -1,0 +1,118 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Реєстрація — Маркетплейс{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="bg-white rounded-4 p-4 p-md-5 shadow-sm">
+                <!-- Header -->
+                <div class="text-center mb-4">
+                    <div class="mb-3">
+                        <i class="bi bi-person-plus-fill text-success" style="font-size: 48px;"></i>
+                    </div>
+                    <h2 class="h4 fw-bold mb-2">Створити акаунт</h2>
+                    <p class="text-muted">Приєднуйтесь до нашого маркетплейсу</p>
+                </div>
+
+                <!-- Registration Form -->
+                <form method="post" action="{% url 'users:register' %}">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {% for error in form.non_field_errors %}
+                        <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- First Name -->
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Ім'я</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                        <div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Last Name -->
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Прізвище</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                        <div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                        <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Пароль</label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                        <div class="text-danger small mt-1">{{ form.password1.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="mb-4">
+                        <label class="form-label small text-muted">Підтвердження пароля</label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                        <div class="text-danger small mt-1">{{ form.password2.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Terms -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="terms" required>
+                            <label class="form-check-label small" for="terms">
+                                Я погоджуюсь з <a href="#" class="text-success">умовами використання</a> 
+                                та <a href="#" class="text-success">політикою конфіденційності</a>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-success w-100 py-3 fw-medium">
+                        <i class="bi bi-person-plus me-2"></i>Зареєструватись
+                    </button>
+                </form>
+
+                <!-- Divider -->
+                <div class="d-flex align-items-center my-4">
+                    <hr class="flex-grow-1">
+                    <span class="px-3 text-muted small">або</span>
+                    <hr class="flex-grow-1">
+                </div>
+
+                <!-- Social Registration -->
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-secondary py-2">
+                        <i class="bi bi-google me-2"></i>Продовжити з Google
+                    </button>
+                </div>
+
+                <!-- Login Link -->
+                <div class="text-center mt-4">
+                    <span class="text-muted">Вже маєте акаунт?</span>
+                    <a href="{% url 'users:login' %}" class="text-success fw-medium text-decoration-none ms-1">
+                        Увійти
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

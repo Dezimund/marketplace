@@ -1,0 +1,62 @@
+<!-- Cart Modal Content - завантажується через HTMX -->
+{% if cart_items %}
+<div class="d-flex flex-column h-100">
+    <div class="flex-grow-1 overflow-auto p-3" id="cart-items-list">
+        <span class="d-none" id="cart-items-count">{{ cart.total_items }}</span>
+        {% for item in cart_items %}
+        {% include 'cart/cart_item.html' with item=item %}
+        {% endfor %}
+    </div>
+
+    <!-- Cart Footer -->
+    <div class="border-top p-3 bg-light mt-auto">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Разом:</span>
+            <span class="fs-4 fw-bold text-success">{{ cart.subtotal }} ₴</span>
+        </div>
+
+        <div class="mb-3">
+            <div class="input-group input-group-sm">
+                <input type="text" class="form-control" placeholder="Промокод">
+                <button class="btn btn-outline-secondary" type="button">Застосувати</button>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2">
+            <a href="{% url 'cart:cart_summary' %}" class="btn btn-success btn-lg">
+                <i class="bi bi-credit-card me-2"></i>Оформити замовлення
+            </a>
+            <button type="button"
+                    class="btn btn-outline-danger btn-sm"
+                    hx-post="{% url 'cart:cart_clear' %}"
+                    hx-target="#cart-offcanvas-body"
+                    hx-swap="innerHTML"
+                    hx-confirm="Ви впевнені, що хочете очистити кошик?">
+                <i class="bi bi-trash me-1"></i>Очистити кошик
+            </button>
+        </div>
+
+        <div class="text-center mt-3">
+            <a href="{% url 'main:catalog_all' %}"
+               class="text-decoration-none text-muted"
+               data-bs-dismiss="offcanvas">
+                <i class="bi bi-arrow-left me-1"></i>Продовжити покупки
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+// Оновити badge кошика
+(function() {
+    const count = {{ cart.total_items }};
+    const badge = document.getElementById('cart-badge');
+    if (badge) {
+        badge.textContent = count;
+        badge.style.display = count > 0 ? 'flex' : 'none';
+    }
+})();
+</script>
+{% else %}
+{% include 'cart/cart_empty.html' %}
+{% endif %}

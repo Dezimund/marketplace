@@ -1,0 +1,97 @@
+<!-- Edit Account Details Partial -->
+<form hx-post="{% url 'users:update_account_details' %}"
+      hx-target="#account-details-container"
+      hx-swap="innerHTML">
+    {% csrf_token %}
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label small text-muted">Ім'я <span class="text-danger">*</span></label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+            <div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label small text-muted">Прізвище <span class="text-danger">*</span></label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}
+            <div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label small text-muted">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+            <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label small text-muted">Телефон</label>
+            <input type="tel"
+                   name="phone"
+                   class="form-control w-100 py-3 fs-6 fw-medium text-dark border-dotted"
+                   placeholder="+380XXXXXXXXX"
+                   value="{{ user.phone_number|default:'' }}">
+            {% if form.phone.errors %}
+            <div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label small text-muted">Компанія</label>
+            {{ form.company }}
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label small text-muted">Країна</label>
+            {{ form.country }}
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label small text-muted">Місто</label>
+            {{ form.city }}
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label small text-muted">Область/Штат</label>
+            <input type="text"
+                   name="state"
+                   class="form-control w-100 py-3 fs-6 fw-medium text-dark border-dotted"
+                   placeholder="ОБЛАСТЬ"
+                   value="{{ user.state|default:'' }}">
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label small text-muted">Поштовий індекс</label>
+            {{ form.postal_code }}
+        </div>
+        <div class="col-12 mb-3">
+            <label class="form-label small text-muted">Адреса (рядок 1)</label>
+            {{ form.address1 }}
+        </div>
+        <div class="col-12 mb-3">
+            <label class="form-label small text-muted">Адреса (рядок 2)</label>
+            {{ form.address2 }}
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+        <button type="submit" class="btn btn-success">
+            <i class="bi bi-check-lg me-2"></i>Зберегти зміни
+        </button>
+        <button type="button"
+                class="btn btn-outline-secondary"
+                hx-get="{% url 'users:account_details' %}"
+                hx-target="#account-details-container"
+                hx-swap="innerHTML">
+            <i class="bi bi-x-lg me-2"></i>Скасувати
+        </button>
+    </div>
+</form>
+
+<style>
+    .border-dotted {
+        border: 1px dashed #dee2e6 !important;
+        border-radius: 8px;
+    }
+    .border-dotted:focus {
+        border-color: var(--prom-green) !important;
+        box-shadow: 0 0 0 0.2rem rgba(0, 160, 70, 0.15);
+    }
+</style>

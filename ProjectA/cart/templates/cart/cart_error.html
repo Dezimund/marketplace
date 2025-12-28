@@ -1,0 +1,19 @@
+<!-- Cart Error - показ помилки -->
+<div class="alert alert-danger m-3" role="alert">
+    <div class="d-flex align-items-center">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <div>
+            <strong>Помилка!</strong>
+            <p class="mb-0">{{ error }}</p>
+            {% if errors %}
+            <ul class="mb-0 mt-2">
+                {% for field, error_list in errors.items %}
+                    {% for err in error_list %}
+                    <li>{{ field }}: {{ err }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>

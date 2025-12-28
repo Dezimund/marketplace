@@ -1,0 +1,322 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Мій профіль — Маркетплейс{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'main:index' %}" 
+                   hx-get="{% url 'main:index' %}" 
+                   hx-target="#main-content" 
+                   hx-push-url="true">
+                    <i class="bi bi-house-fill me-1"></i>Головна
+                </a>
+            </li>
+            <li class="breadcrumb-item active">Мій профіль</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3 mb-4">
+            <div class="bg-white rounded-4 p-4 shadow-sm">
+                <!-- User Info -->
+                <div class="text-center mb-4">
+                    <div class="position-relative d-inline-block mb-3">
+                        <div class="rounded-circle bg-success d-flex align-items-center justify-content-center mx-auto" 
+                             style="width: 80px; height: 80px;">
+                            <span class="text-white fs-2 fw-bold">
+                                {{ user.first_name.0 }}{{ user.last_name.0 }}
+                            </span>
+                        </div>
+                        {% if user.is_seller %}
+                        <span class="position-absolute bottom-0 end-0 badge bg-warning rounded-pill">
+                            <i class="bi bi-shop"></i>
+                        </span>
+                        {% endif %}
+                    </div>
+                    <h5 class="fw-bold mb-1">{{ user.first_name }} {{ user.last_name }}</h5>
+                    <p class="text-muted small mb-0">{{ user.email }}</p>
+                    {% if user.is_seller %}
+                    <span class="badge bg-success-subtle text-success mt-2">Продавець</span>
+                    {% endif %}
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="nav flex-column">
+                    <a class="nav-link px-3 py-2 rounded active bg-success-subtle text-success" href="#account" data-bs-toggle="pill">
+                        <i class="bi bi-person me-2"></i>Мій акаунт
+                    </a>
+                    <a class="nav-link px-3 py-2 rounded text-dark" href="#orders" data-bs-toggle="pill">
+                        <i class="bi bi-box-seam me-2"></i>Мої замовлення
+                    </a>
+                    <a class="nav-link px-3 py-2 rounded text-dark" href="#wishlist" data-bs-toggle="pill">
+                        <i class="bi bi-heart me-2"></i>Список бажань
+                    </a>
+                    {% if user.is_seller %}
+                    <a class="nav-link px-3 py-2 rounded text-dark" href="#products" data-bs-toggle="pill">
+                        <i class="bi bi-shop me-2"></i>Мої товари
+                    </a>
+                    {% endif %}
+                    <a class="nav-link px-3 py-2 rounded text-dark" href="#settings" data-bs-toggle="pill">
+                        <i class="bi bi-gear me-2"></i>Налаштування
+                    </a>
+                    <hr class="my-2">
+                    <a class="nav-link px-3 py-2 rounded text-danger" href="{% url 'users:logout' %}">
+                        <i class="bi bi-box-arrow-right me-2"></i>Вийти
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <div class="tab-content">
+                <!-- Account Tab -->
+                <div class="tab-pane fade show active" id="account">
+                    <div class="bg-white rounded-4 p-4 shadow-sm mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="fw-bold mb-0">
+                                <i class="bi bi-person-circle text-success me-2"></i>Дані акаунту
+                            </h4>
+                        </div>
+                        
+                        <!-- Account Details Container -->
+                        <div id="account-details-container">
+                            {% include 'users/account_details.html' %}
+                        </div>
+                    </div>
+
+                    <!-- Security Section -->
+                    <div class="bg-white rounded-4 p-4 shadow-sm">
+                        <h5 class="fw-bold mb-4">
+                            <i class="bi bi-shield-lock text-success me-2"></i>Безпека
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="border rounded-3 p-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">Пароль</h6>
+                                            <small class="text-muted">Останній раз змінено: невідомо</small>
+                                        </div>
+                                        <button class="btn btn-outline-success btn-sm">
+                                            <i class="bi bi-pencil me-1"></i>Змінити
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="border rounded-3 p-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">Двофакторна автентифікація</h6>
+                                            <small class="text-muted">Не активовано</small>
+                                        </div>
+                                        <button class="btn btn-outline-success btn-sm">
+                                            <i class="bi bi-plus me-1"></i>Увімкнути
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Tab -->
+                <div class="tab-pane fade" id="orders">
+                    <div class="bg-white rounded-4 p-4 shadow-sm">
+                        <h4 class="fw-bold mb-4">
+                            <i class="bi bi-box-seam text-success me-2"></i>Мої замовлення
+                        </h4>
+                        
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox text-muted" style="font-size: 64px;"></i>
+                            <h5 class="text-muted mt-3">Замовлень поки немає</h5>
+                            <p class="text-muted mb-4">Перегляньте наш каталог та знайдіть щось цікаве!</p>
+                            <a href="{% url 'main:catalog_all' %}" class="btn btn-success">
+                                <i class="bi bi-grid me-2"></i>Перейти до каталогу
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wishlist Tab -->
+                <div class="tab-pane fade" id="wishlist">
+                    <div class="bg-white rounded-4 p-4 shadow-sm">
+                        <h4 class="fw-bold mb-4">
+                            <i class="bi bi-heart text-success me-2"></i>Список бажань
+                        </h4>
+                        
+                        <div class="text-center py-5">
+                            <i class="bi bi-heart text-muted" style="font-size: 64px;"></i>
+                            <h5 class="text-muted mt-3">Список бажань порожній</h5>
+                            <p class="text-muted mb-4">Додайте товари, які вам сподобались!</p>
+                            <a href="{% url 'main:catalog_all' %}" class="btn btn-success">
+                                <i class="bi bi-grid me-2"></i>Перейти до каталогу
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {% if user.is_seller %}
+                <!-- Products Tab (for sellers) -->
+                <div class="tab-pane fade" id="products">
+                    <div class="bg-white rounded-4 p-4 shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="fw-bold mb-0">
+                                <i class="bi bi-shop text-success me-2"></i>Мої товари
+                            </h4>
+                            <a href="#" class="btn btn-success">
+                                <i class="bi bi-plus-lg me-2"></i>Додати товар
+                            </a>
+                        </div>
+                        
+                        {% if user_products %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Товар</th>
+                                        <th>Ціна</th>
+                                        <th>Статус</th>
+                                        <th>Дії</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in user_products %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if product.main_image %}
+                                                <img src="{{ product.main_image.url }}" 
+                                                     class="rounded me-3" 
+                                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                                {% endif %}
+                                                <div>
+                                                    <h6 class="mb-0">{{ product.name }}</h6>
+                                                    <small class="text-muted">{{ product.category.name }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ product.price }} ₴</td>
+                                        <td><span class="badge bg-success">Активний</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-secondary me-1">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-box text-muted" style="font-size: 64px;"></i>
+                            <h5 class="text-muted mt-3">У вас ще немає товарів</h5>
+                            <p class="text-muted mb-4">Почніть продавати, додавши свій перший товар!</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Settings Tab -->
+                <div class="tab-pane fade" id="settings">
+                    <div class="bg-white rounded-4 p-4 shadow-sm">
+                        <h4 class="fw-bold mb-4">
+                            <i class="bi bi-gear text-success me-2"></i>Налаштування
+                        </h4>
+                        
+                        <!-- Notifications -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">Сповіщення</h6>
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" id="emailNotif" checked>
+                                <label class="form-check-label" for="emailNotif">
+                                    Email сповіщення про замовлення
+                                </label>
+                            </div>
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" id="promoNotif" checked>
+                                <label class="form-check-label" for="promoNotif">
+                                    Акції та знижки
+                                </label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="newsNotif">
+                                <label class="form-check-label" for="newsNotif">
+                                    Новини маркетплейсу
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Delete Account -->
+                        <div class="mt-4">
+                            <h6 class="fw-bold text-danger mb-3">Небезпечна зона</h6>
+                            <p class="text-muted small mb-3">
+                                Видалення акаунту призведе до втрати всіх даних без можливості відновлення.
+                            </p>
+                            <button class="btn btn-outline-danger">
+                                <i class="bi bi-trash me-2"></i>Видалити акаунт
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommended Products -->
+            {% if recommended_products %}
+            <div class="bg-white rounded-4 p-4 shadow-sm mt-4">
+                <h5 class="fw-bold mb-4">
+                    <i class="bi bi-star text-warning me-2"></i>Рекомендовані для вас
+                </h5>
+                <div class="row g-3">
+                    {% for product in recommended_products %}
+                    <div class="col-md-4">
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                {% if product.main_image %}
+                                <img src="{{ product.main_image.url }}" class="product-image" alt="{{ product.name }}">
+                                {% else %}
+                                <div class="product-image bg-light d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-image text-muted" style="font-size: 48px;"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="product-info">
+                                <a href="{% url 'main:product_detail' product.slug %}" class="product-title">
+                                    {{ product.name }}
+                                </a>
+                                <div class="product-price-container">
+                                    <span class="product-price">{{ product.price }} ₴</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .nav-link:hover {
+        background-color: rgba(0, 160, 70, 0.1);
+    }
+    .nav-link.active {
+        background-color: rgba(0, 160, 70, 0.15) !important;
+    }
+</style>
+{% endblock %}

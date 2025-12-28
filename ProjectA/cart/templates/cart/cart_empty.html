@@ -1,0 +1,24 @@
+<!-- Cart Empty - порожній кошик -->
+<div class="d-flex flex-column align-items-center justify-content-center h-100 p-4 text-center">
+    <div class="mb-4">
+        <i class="bi bi-cart-x text-muted" style="font-size: 80px;"></i>
+    </div>
+    <h5 class="text-muted mb-2">Кошик порожній</h5>
+    <p class="text-muted mb-4">Додайте товари, щоб оформити замовлення</p>
+    <a href="{% url 'main:catalog_all' %}"
+       class="btn btn-success btn-lg"
+       data-bs-dismiss="offcanvas">
+        <i class="bi bi-grid me-2"></i>Перейти до каталогу
+    </a>
+</div>
+
+<script>
+// Оновити badge кошика на 0
+(function() {
+    const badge = document.getElementById('cart-badge');
+    if (badge) {
+        badge.textContent = '0';
+        badge.style.display = 'none';
+    }
+})();
+</script>

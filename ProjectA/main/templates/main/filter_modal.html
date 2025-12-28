@@ -1,0 +1,132 @@
+<!-- Filter Modal - для мобільної версії -->
+<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen-sm-down">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="filterModalLabel">
+                    <i class="bi bi-funnel me-2"></i>Фільтри
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form hx-get="{% if current_category %}{% url 'main:catalog' current_category %}{% else %}{% url 'main:catalog_all' %}{% endif %}"
+                      hx-target="#main-content"
+                      hx-push-url="true"
+                      id="mobile-filter-form">
+
+                    <!-- Search Query (hidden) -->
+                    {% if search_query %}
+                    <input type="hidden" name="q" value="{{ search_query }}">
+                    {% endif %}
+
+                    <!-- Category Filter -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3">
+                            <i class="bi bi-grid-3x3-gap me-2"></i>Категорія
+                        </h6>
+                        <div class="list-group list-group-flush">
+                            <a href="{% url 'main:catalog_all' %}"
+                               class="list-group-item list-group-item-action {% if not current_category %}active{% endif %}"
+                               hx-get="{% url 'main:catalog_all' %}"
+                               hx-target="#main-content"
+                               hx-push-url="true"
+                               data-bs-dismiss="modal">
+                                Всі товари
+                            </a>
+                            {% for category in categories %}
+                            <a href="{% url 'main:catalog' category.slug %}"
+                               class="list-group-item list-group-item-action {% if current_category == category.slug %}active{% endif %}"
+                               hx-get="{% url 'main:catalog' category.slug %}"
+                               hx-target="#main-content"
+                               hx-push-url="true"
+                               data-bs-dismiss="modal">
+                                {{ category.name }}
+                                <span class="badge bg-secondary float-end">{{ category.products.count }}</span>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Price Filter -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3">
+                            <i class="bi bi-currency-exchange me-2"></i>Ціна, ₴
+                        </h6>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="number" name="min_price" class="form-control"
+                                       placeholder="Від" value="{{ filter_params.min_price }}" min="0">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" name="max_price" class="form-control"
+                                       placeholder="До" value="{{ filter_params.max_price }}" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Color Filter -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3">
+                            <i class="bi bi-palette me-2"></i>Колір
+                        </h6>
+                        <input type="text" name="color" class="form-control"
+                               placeholder="Введіть колір" value="{{ filter_params.color }}">
+                    </div>
+
+                    <!-- Size Filter -->
+                    {% if sizes %}
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3">
+                            <i class="bi bi-rulers me-2"></i>Розмір
+                        </h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for size in sizes %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="size"
+                                       value="{{ size.name }}" id="mobile-size-{{ size.id }}"
+                                       {% if filter_params.size == size.name %}checked{% endif %}>
+                                <label class="form-check-label" for="mobile-size-{{ size.id }}">
+                                    {{ size.name }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="{% if current_category %}{% url 'main:catalog' current_category %}{% else %}{% url 'main:catalog_all' %}{% endif %}"
+                   class="btn btn-outline-secondary"
+                   hx-get="{% if current_category %}{% url 'main:catalog' current_category %}{% else %}{% url 'main:catalog_all' %}{% endif %}"
+                   hx-target="#main-content"
+                   hx-push-url="true"
+                   data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i>Скинути
+                </a>
+                <button type="submit" form="mobile-filter-form" class="btn btn-success" data-bs-dismiss="modal">
+                    <i class="bi bi-check2 me-1"></i>Застосувати
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Filter Button (можна додати в catalog.html) -->
+<style>
+    @media (max-width: 991.98px) {
+        .filter-sidebar {
+            display: none;
+        }
+
+        .mobile-filter-btn {
+            display: flex !important;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .mobile-filter-btn {
+            display: none !important;
+        }
+    }
+</style>

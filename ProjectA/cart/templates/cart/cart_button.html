@@ -1,0 +1,54 @@
+<!-- Cart Button - кнопка кошика для хедера -->
+<a href="#"
+   class="header-icon position-relative"
+   data-bs-toggle="offcanvas"
+   data-bs-target="#cartOffcanvas"
+   hx-get="{% url 'cart:cart_modal.html' %}"
+   hx-target="#cartOffcanvas .offcanvas-body"
+   hx-trigger="click"
+   hx-swap="innerHTML">
+    <i class="bi bi-cart3"></i>
+    <span>Кошик</span>
+    <span class="cart-badge" id="cart-badge">{{ cart_total_items|default:0 }}</span>
+</a>
+
+<style>
+    .cart-badge {
+        position: absolute;
+        top: 0;
+        right: 8px;
+        background-color: var(--prom-orange, #ff6a00);
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+
+    .cart-badge:empty,
+    .cart-badge[data-count="0"] {
+        display: none;
+    }
+</style>
+
+<script>
+// Оновлення лічильника кошика
+function updateCartBadge(count) {
+    const badge = document.getElementById('cart-badge');
+    if (badge) {
+        badge.textContent = count;
+        badge.style.display = count > 0 ? 'flex' : 'none';
+    }
+}
+
+// Слухаємо подію оновлення кошика
+document.body.addEventListener('cart-updated', function(e) {
+    if (e.detail && e.detail.total_items !== undefined) {
+        updateCartBadge(e.detail.total_items);
+    }
+});
+</script>

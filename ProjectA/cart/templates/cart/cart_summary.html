@@ -1,0 +1,260 @@
+<!-- Cart Summary - повна сторінка кошика -->
+{% extends 'main/base.html' %}
+
+{% block title %}Кошик — Маркетплейс{% endblock %}
+
+{% block content %}
+<!-- Breadcrumbs -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'main:index' %}"
+               hx-get="{% url 'main:index' %}"
+               hx-target="#main-content"
+               hx-push-url="true">
+                <i class="bi bi-house-fill me-1"></i>Головна
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Кошик</li>
+    </ol>
+</nav>
+
+<h1 class="h3 mb-4">
+    <i class="bi bi-cart3 me-2"></i>Кошик
+    {% if cart.total_items %}
+    <span class="badge bg-success">{{ cart.total_items }} товарів</span>
+    {% endif %}
+</h1>
+
+{% if cart_items %}
+<div class="row">
+    <!-- Cart Items -->
+    <div class="col-lg-8 mb-4">
+        <div class="bg-white rounded-4 p-4">
+            <!-- Select All -->
+            <div class="d-flex justify-content-between align-items-center pb-3 mb-3 border-bottom">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="selectAll" checked>
+                    <label class="form-check-label" for="selectAll">
+                        Обрати всі товари
+                    </label>
+                </div>
+                <button type="button"
+                        class="btn btn-link text-danger text-decoration-none"
+                        hx-post="{% url 'cart:cart_clear' %}"
+                        hx-target="#main-content"
+                        hx-swap="innerHTML"
+                        hx-confirm="Ви впевнені, що хочете очистити кошик?">
+                    <i class="bi bi-trash me-1"></i>Очистити кошик
+                </button>
+            </div>
+
+            <!-- Items List -->
+            <div id="cart-items-container">
+                {% for item in cart_items %}
+                <div class="cart-summary-item py-3 {% if not forloop.last %}border-bottom{% endif %}"
+                     id="cart-summary-item-{{ item.id }}">
+                    <div class="row align-items-center">
+                        <!-- Checkbox -->
+                        <div class="col-auto">
+                            <input class="form-check-input item-checkbox" type="checkbox" checked>
+                        </div>
+
+                        <!-- Image -->
+                        <div class="col-auto">
+                            <a href="{% url 'main:product_detail' item.product.slug %}">
+                                {% if item.product.main_image %}
+                                <img src="{{ item.product.main_image.url }}"
+                                     alt="{{ item.product.name }}"
+                                     class="rounded"
+                                     style="width: 100px; height: 100px; object-fit: cover;">
+                                {% else %}
+                                <div class="rounded bg-light d-flex align-items-center justify-content-center"
+                                     style="width: 100px; height: 100px;">
+                                    <i class="bi bi-image text-muted" style="font-size: 32px;"></i>
+                                </div>
+                                {% endif %}
+                            </a>
+                        </div>
+
+                        <!-- Product Info -->
+                        <div class="col">
+                            <h6 class="mb-1">
+                                <a href="{% url 'main:product_detail' item.product.slug %}"
+                                   class="text-decoration-none text-dark">
+                                    {{ item.product.name }}
+                                </a>
+                            </h6>
+                            <div class="mb-2">
+                                {% if item.product_size %}
+                                <small class="text-muted me-3">
+                                    <i class="bi bi-rulers me-1"></i>Розмір: {{ item.product_size.size.name }}
+                                </small>
+                                {% endif %}
+                                {% if item.product.color %}
+                                <small class="text-muted">
+                                    <i class="bi bi-palette me-1"></i>Колір: {{ item.product.color }}
+                                </small>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-success">
+                                    <i class="bi bi-check-circle-fill me-1"></i>В наявності
+                                </span>
+                                {% if item.product_size %}
+                                <small class="text-muted">({{ item.product_size.stock }} шт.)</small>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Quantity -->
+                        <div class="col-auto">
+                            <div class="input-group" style="width: 130px;">
+                                <button class="btn btn-outline-secondary" type="button"
+                                        hx-post="{% url 'cart:update_cart' item.id %}"
+                                        hx-target="#main-content"
+                                        hx-swap="innerHTML"
+                                        hx-vals='{"quantity": {{ item.quantity|add:"-1" }}}'
+                                        {% if item.quantity <= 1 %}disabled{% endif %}>
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input type="text"
+                                       class="form-control text-center"
+                                       value="{{ item.quantity }}"
+                                       readonly>
+                                <button class="btn btn-outline-secondary" type="button"
+                                        hx-post="{% url 'cart:update_cart' item.id %}"
+                                        hx-target="#main-content"
+                                        hx-swap="innerHTML"
+                                        hx-vals='{"quantity": {{ item.quantity|add:"1" }}}'
+                                        {% if item.product_size and item.quantity >= item.product_size.stock %}disabled{% endif %}>
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="col-auto text-end" style="min-width: 120px;">
+                            <div class="fw-bold fs-5">{{ item.total_price }} ₴</div>
+                            {% if item.quantity > 1 %}
+                            <small class="text-muted">{{ item.product.price }} ₴ за шт.</small>
+                            {% endif %}
+                        </div>
+
+                        <!-- Remove -->
+                        <div class="col-auto">
+                            <button type="button"
+                                    class="btn btn-link text-danger p-2"
+                                    hx-post="{% url 'cart:remove_cart' item.id %}"
+                                    hx-target="#main-content"
+                                    hx-swap="innerHTML"
+                                    title="Видалити">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Continue Shopping -->
+        <div class="mt-4">
+            <a href="{% url 'main:catalog_all' %}"
+               class="btn btn-outline-success"
+               hx-get="{% url 'main:catalog_all' %}"
+               hx-target="#main-content"
+               hx-push-url="true">
+                <i class="bi bi-arrow-left me-2"></i>Продовжити покупки
+            </a>
+        </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="col-lg-4">
+        <div class="bg-white rounded-4 p-4 sticky-top" style="top: 100px;">
+            <h5 class="mb-4">
+                <i class="bi bi-receipt me-2"></i>Ваше замовлення
+            </h5>
+
+            <!-- Summary Details -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Товарів ({{ cart.total_items }}):</span>
+                    <span>{{ cart.subtotal }} ₴</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Доставка:</span>
+                    <span class="text-success">Безкоштовно</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Знижка:</span>
+                    <span>0 ₴</span>
+                </div>
+            </div>
+
+            <!-- Promo Code -->
+            <div class="mb-4">
+                <label class="form-label small text-muted">Промокод</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Введіть код">
+                    <button class="btn btn-outline-secondary" type="button">
+                        Застосувати
+                    </button>
+                </div>
+            </div>
+
+            <!-- Total -->
+            <div class="border-top pt-3 mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fs-5">До сплати:</span>
+                    <span class="fs-4 fw-bold text-success">{{ cart.subtotal }} ₴</span>
+                </div>
+            </div>
+
+            <!-- Checkout Button -->
+            <div class="d-grid gap-2">
+                <a href="#" class="btn btn-success btn-lg">
+                    <i class="bi bi-credit-card me-2"></i>Оформити замовлення
+                </a>
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="mt-4 text-center">
+                <small class="text-muted d-block mb-2">Приймаємо до оплати:</small>
+                <div class="d-flex justify-content-center gap-2">
+                    <i class="bi bi-credit-card-2-front fs-4 text-muted"></i>
+                    <i class="bi bi-paypal fs-4 text-muted"></i>
+                    <i class="bi bi-wallet2 fs-4 text-muted"></i>
+                </div>
+            </div>
+
+            <!-- Security Badge -->
+            <div class="mt-4 p-3 bg-light rounded-3 text-center">
+                <i class="bi bi-shield-check text-success me-2"></i>
+                <small class="text-muted">Безпечна оплата та захист даних</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<!-- Empty Cart -->
+<div class="bg-white rounded-4 p-5 text-center">
+    <div class="mb-4">
+        <i class="bi bi-cart-x text-muted" style="font-size: 100px;"></i>
+    </div>
+    <h3 class="text-muted mb-3">Ваш кошик порожній</h3>
+    <p class="text-muted mb-4">
+        Схоже, ви ще не додали жодного товару до кошика.<br>
+        Перегляньте наш каталог та знайдіть щось цікаве!
+    </p>
+    <a href="{% url 'main:catalog_all' %}"
+       class="btn btn-success btn-lg"
+       hx-get="{% url 'main:catalog_all' %}"
+       hx-target="#main-content"
+       hx-push-url="true">
+        <i class="bi bi-grid me-2"></i>Перейти до каталогу
+    </a>
+</div>
+{% endif %}
+{% endblock %}

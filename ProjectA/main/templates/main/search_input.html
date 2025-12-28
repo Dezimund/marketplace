@@ -1,0 +1,24 @@
+<!-- Search Input Template - для динамічного показу/приховування -->
+<form class="d-flex flex-grow-1"
+      hx-get="{% url 'main:catalog_all' %}"
+      hx-target="#main-content"
+      hx-push-url="true">
+    <div class="input-group">
+        <input type="text"
+               class="form-control search-input"
+               name="q"
+               placeholder="Я шукаю..."
+               value="{{ search_query|default:'' }}"
+               autofocus>
+        <button type="submit" class="btn search-btn">
+            <i class="bi bi-search"></i>
+        </button>
+        <button type="button"
+                class="btn btn-outline-secondary"
+                hx-get="{% if current_category %}{% url 'main:catalog' current_category %}?reset_search=true{% else %}{% url 'main:catalog_all' %}?reset_search=true{% endif %}"
+                hx-target="#search-container"
+                hx-swap="innerHTML">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+</form>

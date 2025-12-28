@@ -1,0 +1,524 @@
+<!-- Product Detail Template - завантажується через HTMX -->
+
+<!-- Breadcrumbs -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'main:index' %}"
+               hx-get="{% url 'main:index' %}"
+               hx-target="#main-content"
+               hx-push-url="true">
+                <i class="bi bi-house-fill me-1"></i>Головна
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'main:catalog_all' %}"
+               hx-get="{% url 'main:catalog_all' %}"
+               hx-target="#main-content"
+               hx-push-url="true">
+                Каталог
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'main:catalog' object.category.slug %}"
+               hx-get="{% url 'main:catalog' object.category.slug %}"
+               hx-target="#main-content"
+               hx-push-url="true">
+                {{ object.category.name }}
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">{{ object.name }}</li>
+    </ol>
+</nav>
+
+<div class="bg-white rounded-4 p-4 mb-4">
+    <div class="row">
+        <!-- Product Images -->
+        <div class="col-lg-5 mb-4 mb-lg-0">
+            <div class="product-gallery">
+                <!-- Main Image -->
+                <div class="main-image-container position-relative mb-3" style="padding-top: 100%; border-radius: 12px; overflow: hidden; background: #f8f9fa;">
+                    {% if object.main_image %}
+                    <img src="{{ object.main_image.url }}"
+                         class="position-absolute top-0 start-0 w-100 h-100"
+                         style="object-fit: contain;"
+                         alt="{{ object.name }}"
+                         id="main-product-image">
+                    {% else %}
+                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-light">
+                        <i class="bi bi-image text-muted" style="font-size: 100px;"></i>
+                    </div>
+                    {% endif %}
+
+                    <!-- Zoom Button -->
+                    <button class="btn btn-light position-absolute" style="top: 12px; right: 12px; border-radius: 50%;" data-bs-toggle="modal" data-bs-target="#imageModal">
+                        <i class="bi bi-zoom-in"></i>
+                    </button>
+
+                    <!-- Badges -->
+                    {% if object.is_new %}
+                    <span class="position-absolute badge bg-info" style="top: 12px; left: 12px;">Новинка</span>
+                    {% endif %}
+                    {% if object.old_price %}
+                    <span class="position-absolute badge bg-danger" style="top: 12px; left: 12px;">-{{ object.discount_percent }}%</span>
+                    {% endif %}
+                </div>
+
+                <!-- Thumbnail Images -->
+                {% if object.images.exists %}
+                <div class="d-flex gap-2 overflow-auto pb-2">
+                    <div class="thumbnail-item active" style="width: 80px; height: 80px; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid var(--prom-green);">
+                        <img src="{{ object.main_image.url }}" class="w-100 h-100" style="object-fit: cover;" onclick="changeMainImage(this.src)">
+                    </div>
+                    {% for image in object.images.all %}
+                    <div class="thumbnail-item" style="width: 80px; height: 80px; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid transparent;">
+                        <img src="{{ image.image.url }}" class="w-100 h-100" style="object-fit: cover;" onclick="changeMainImage(this.src)">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-lg-7">
+            <div class="ps-lg-4">
+                <!-- Title & Rating -->
+                <h1 class="h3 mb-3">{{ object.name }}</h1>
+
+                <div class="d-flex align-items-center gap-4 mb-3">
+                    <div class="d-flex align-items-center">
+                        <span class="text-warning me-2">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-half"></i>
+                        </span>
+                        <span class="text-muted">4.5 (24 відгуки)</span>
+                    </div>
+                    <span class="text-muted">
+                        <i class="bi bi-eye me-1"></i>{{ object.views_count }} переглядів
+                    </span>
+                </div>
+
+                <!-- Availability & Seller -->
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    <span class="badge bg-success-subtle text-success px-3 py-2">
+                        <i class="bi bi-check-circle-fill me-1"></i>В наявності
+                    </span>
+                    {% if seller_name %}
+                    <span class="text-muted">
+                        <i class="bi bi-shop me-1"></i>Продавець: {{ seller_name }}
+                    </span>
+                    {% endif %}
+                    <span class="text-muted">
+                        <i class="bi bi-tag me-1"></i>{{ object.category.name }}
+                    </span>
+                </div>
+
+                <!-- Price -->
+                <div class="bg-light rounded-3 p-4 mb-4">
+                    <div class="d-flex align-items-baseline gap-3">
+                        <span class="display-5 fw-bold text-success">{{ object.price }} ₴</span>
+                        {% if object.old_price %}
+                        <span class="fs-4 text-muted text-decoration-line-through">{{ object.old_price }} ₴</span>
+                        <span class="badge bg-danger">-{{ object.discount_percent }}%</span>
+                        {% endif %}
+                    </div>
+                    <small class="text-muted">
+                        <i class="bi bi-credit-card me-1"></i>Оплата частинами: від {{ object.price|floatformat:0 }} ₴/міс
+                    </small>
+                </div>
+
+                <!-- Color -->
+                {% if object.color %}
+                <div class="mb-4">
+                    <h6 class="text-muted mb-2">Колір:</h6>
+                    <span class="badge bg-light text-dark border px-3 py-2">
+                        <i class="bi bi-palette me-1"></i>{{ object.color }}
+                    </span>
+                </div>
+                {% endif %}
+
+                <!-- Add to Cart Form -->
+                <form id="add-to-cart-form"
+                      hx-post="{% url 'cart:add_to_cart' object.slug %}"
+                      hx-target="#cart-offcanvas-body"
+                      hx-swap="innerHTML"
+                      hx-on::after-request="updateCartAfterAdd(event)">
+                    {% csrf_token %}
+
+                    <!-- Sizes -->
+                    {% if object.product_sizes.exists %}
+                    <div class="mb-4">
+                        <h6 class="text-muted mb-2">Оберіть розмір:</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for ps in object.product_sizes.all %}
+                            <input type="radio" class="btn-check" name="size_id"
+                                   id="size-{{ ps.id }}" value="{{ ps.id }}"
+                                   {% if forloop.first %}checked{% endif %}
+                                   {% if ps.stock == 0 %}disabled{% endif %}>
+                            <label class="btn btn-outline-secondary size-btn" for="size-{{ ps.id }}">
+                                {{ ps.size.name }}
+                                {% if ps.stock < 5 and ps.stock > 0 %}
+                                <small class="text-warning">({{ ps.stock }} шт)</small>
+                                {% elif ps.stock == 0 %}
+                                <small class="text-danger">(немає)</small>
+                                {% endif %}
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Quantity & Add to Cart -->
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        <div class="input-group" style="width: 140px;">
+                            <button class="btn btn-outline-secondary" type="button" onclick="changeQty(-1)">
+                                <i class="bi bi-dash"></i>
+                            </button>
+                            <input type="number" class="form-control text-center"
+                                   value="1" min="1" id="qty-input" name="quantity">
+                            <button class="btn btn-outline-secondary" type="button" onclick="changeQty(1)">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-lg flex-grow-1">
+                            <i class="bi bi-cart-plus me-2"></i>Додати в кошик
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Quick Buy -->
+                <button class="btn btn-outline-success w-100 mb-4">
+                    <i class="bi bi-lightning-fill me-2"></i>Купити в 1 клік
+                </button>
+
+                <!-- Delivery Info -->
+                <div class="border rounded-3 p-3">
+                    <div class="d-flex gap-3 mb-3">
+                        <i class="bi bi-truck text-success fs-4"></i>
+                        <div>
+                            <strong>Доставка</strong>
+                            <p class="text-muted mb-0 small">Нова Пошта, Укрпошта, кур'єр</p>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3 mb-3">
+                        <i class="bi bi-credit-card text-success fs-4"></i>
+                        <div>
+                            <strong>Оплата</strong>
+                            <p class="text-muted mb-0 small">Карткою, накладений платіж, готівка</p>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3">
+                        <i class="bi bi-arrow-counterclockwise text-success fs-4"></i>
+                        <div>
+                            <strong>Повернення</strong>
+                            <p class="text-muted mb-0 small">14 днів на повернення</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Product Tabs -->
+<div class="bg-white rounded-4 p-4 mb-4">
+    <ul class="nav nav-tabs" id="productTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc" type="button">
+                <i class="bi bi-file-text me-1"></i>Опис
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button">
+                <i class="bi bi-list-check me-1"></i>Характеристики
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button">
+                <i class="bi bi-chat-left-text me-1"></i>Відгуки (24)
+            </button>
+        </li>
+    </ul>
+    <div class="tab-content pt-4" id="productTabsContent">
+        <!-- Description Tab -->
+        <div class="tab-pane fade show active" id="desc" role="tabpanel">
+            <div class="product-description">
+                {{ object.description|linebreaks }}
+            </div>
+        </div>
+
+        <!-- Specifications Tab -->
+        <div class="tab-pane fade" id="specs" role="tabpanel">
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <th scope="row" style="width: 200px;">Категорія</th>
+                        <td>{{ object.category.name }}</td>
+                    </tr>
+                    {% if object.color %}
+                    <tr>
+                        <th scope="row">Колір</th>
+                        <td>{{ object.color }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if object.product_sizes.exists %}
+                    <tr>
+                        <th scope="row">Доступні розміри</th>
+                        <td>
+                            {% for ps in object.product_sizes.all %}
+                                {{ ps.size.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Reviews Tab -->
+        <div class="tab-pane fade" id="reviews" role="tabpanel">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="text-center">
+                        <div class="display-4 fw-bold text-success">4.5</div>
+                        <div class="text-warning mb-2">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-half"></i>
+                        </div>
+                        <p class="text-muted">24 відгуки</p>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="me-2">5</span>
+                        <div class="progress flex-grow-1" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: 60%;"></div>
+                        </div>
+                        <span class="ms-2 text-muted">14</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="me-2">4</span>
+                        <div class="progress flex-grow-1" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: 25%;"></div>
+                        </div>
+                        <span class="ms-2 text-muted">6</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="me-2">3</span>
+                        <div class="progress flex-grow-1" style="height: 8px;">
+                            <div class="progress-bar bg-warning" style="width: 10%;"></div>
+                        </div>
+                        <span class="ms-2 text-muted">3</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="me-2">2</span>
+                        <div class="progress flex-grow-1" style="height: 8px;">
+                            <div class="progress-bar bg-danger" style="width: 3%;"></div>
+                        </div>
+                        <span class="ms-2 text-muted">1</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">1</span>
+                        <div class="progress flex-grow-1" style="height: 8px;">
+                            <div class="progress-bar bg-danger" style="width: 0%;"></div>
+                        </div>
+                        <span class="ms-2 text-muted">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sample Reviews -->
+            <div class="border-top pt-4 mt-4">
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <strong>Іван П.</strong>
+                                <span class="text-warning ms-2">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                </span>
+                            </div>
+                            <small class="text-muted">15.12.2024</small>
+                        </div>
+                        <p class="mb-0">Чудовий товар! Повністю відповідає опису. Доставка швидка, упаковка надійна. Рекомендую!</p>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <strong>Марія К.</strong>
+                                <span class="text-warning ms-2">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star"></i>
+                                </span>
+                            </div>
+                            <small class="text-muted">10.12.2024</small>
+                        </div>
+                        <p class="mb-0">Гарна якість за таку ціну. Трохи довго чекала на доставку, але результатом задоволена.</p>
+                    </div>
+                </div>
+
+                <button class="btn btn-outline-success">
+                    <i class="bi bi-plus-lg me-1"></i>Написати відгук
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Related Products -->
+{% if related_products %}
+<div class="mb-4">
+    <h3 class="h5 mb-4">
+        <i class="bi bi-collection me-2"></i>Схожі товари
+    </h3>
+    <div class="row g-3">
+        {% for product in related_products %}
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="product-card">
+                <div class="product-image-container">
+                    {% if product.main_image %}
+                    <img src="{{ product.main_image.url }}" class="product-image" alt="{{ product.name }}" loading="lazy">
+                    {% else %}
+                    <div class="product-image bg-light d-flex align-items-center justify-content-center">
+                        <i class="bi bi-image text-muted" style="font-size: 48px;"></i>
+                    </div>
+                    {% endif %}
+                    <button class="product-favorite">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </div>
+                <div class="product-info">
+                    <a href="{% url 'main:product_detail' product.slug %}"
+                       class="product-title"
+                       hx-get="{% url 'main:product_detail' product.slug %}"
+                       hx-target="#main-content"
+                       hx-push-url="true">
+                        {{ product.name }}
+                    </a>
+                    <div class="product-availability">
+                        <i class="bi bi-check-circle-fill me-1"></i>В наявності
+                    </div>
+                    <div class="product-price-container">
+                        <span class="product-price">{{ product.price }} ₴</span>
+                        {% if product.old_price %}
+                        <span class="product-old-price">{{ product.old_price }} ₴</span>
+                        {% endif %}
+                    </div>
+                    <!-- Quick Add to Cart for Related Products -->
+                    <button class="btn btn-buy"
+                            hx-post="{% url 'cart:add_to_cart' product.slug %}"
+                            hx-target="#cart-offcanvas-body"
+                            hx-swap="innerHTML"
+                            hx-vals='{"quantity": 1}'
+                            hx-on::after-request="updateCartAfterAdd(event)">
+                        <i class="bi bi-cart-plus me-1"></i>Купити
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-0">
+                {% if object.main_image %}
+                <img src="{{ object.main_image.url }}" class="img-fluid" alt="{{ object.name }}" id="modal-image">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function changeMainImage(src) {
+    document.getElementById('main-product-image').src = src;
+    document.getElementById('modal-image').src = src;
+
+    // Update thumbnail borders
+    document.querySelectorAll('.thumbnail-item').forEach(item => {
+        item.style.borderColor = 'transparent';
+    });
+    event.target.parentElement.style.borderColor = 'var(--prom-green)';
+}
+
+function changeQty(delta) {
+    const input = document.getElementById('qty-input');
+    let value = parseInt(input.value) + delta;
+    if (value < 1) value = 1;
+    input.value = value;
+}
+
+function updateCartAfterAdd(event) {
+    if (event.detail.successful) {
+        // Оновити badge кошика
+        fetch('{% url "cart:cart_count" %}')
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.getElementById('cart-badge');
+                if (badge) {
+                    badge.textContent = data.total_items;
+                    badge.style.display = data.total_items > 0 ? 'flex' : 'none';
+                }
+                // Показати toast
+                showCartNotification('Товар додано до кошика');
+                // Відкрити offcanvas кошика
+                const cartOffcanvas = new bootstrap.Offcanvas(document.getElementById('cartOffcanvas'));
+                cartOffcanvas.show();
+            });
+    }
+}
+
+function showCartNotification(message) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toastId = 'toast-' + Date.now();
+    const toastHTML = `
+        <div class="toast show" role="alert" id="${toastId}">
+            <div class="toast-header bg-success text-white">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <strong class="me-auto">Успішно</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">${message}</div>
+        </div>
+    `;
+    container.insertAdjacentHTML('beforeend', toastHTML);
+
+    setTimeout(() => {
+        const toast = document.getElementById(toastId);
+        if (toast) toast.remove();
+    }, 3000);
+}
+</script>

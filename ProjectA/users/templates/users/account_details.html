@@ -1,0 +1,73 @@
+<!-- Account Details Partial -->
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label class="form-label small text-muted">Ім'я</label>
+        <div class="form-control-plaintext border-bottom pb-2">
+            {{ user.first_name|default:"—" }}
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label small text-muted">Прізвище</label>
+        <div class="form-control-plaintext border-bottom pb-2">
+            {{ user.last_name|default:"—" }}
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label small text-muted">Email</label>
+        <div class="form-control-plaintext border-bottom pb-2">
+            {{ user.email|default:"—" }}
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label small text-muted">Телефон</label>
+        <div class="form-control-plaintext border-bottom pb-2">
+            {{ user.phone_number|default:"Не вказано" }}
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label small text-muted">Компанія</label>
+        <div class="form-control-plaintext border-bottom pb-2">
+            {{ user.company|default:"Не вказано" }}
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label small text-muted">Країна</label>
+        <div class="form-control-plaintext border-bottom pb-2">
+            {{ user.country|default:"Не вказано" }}
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label small text-muted">Місто</label>
+        <div class="form-control-plaintext border-bottom pb-2">
+            {{ user.city|default:"Не вказано" }}
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label small text-muted">Поштовий індекс</label>
+        <div class="form-control-plaintext border-bottom pb-2">
+            {{ user.postal_code|default:"Не вказано" }}
+        </div>
+    </div>
+    <div class="col-12 mb-3">
+        <label class="form-label small text-muted">Адреса 1</label>
+        <div class="form-control-plaintext border-bottom pb-2">
+            {{ user.address1|default:"Не вказано" }}
+        </div>
+    </div>
+    <div class="col-12 mb-3">
+        <label class="form-label small text-muted">Адреса 2</label>
+        <div class="form-control-plaintext border-bottom pb-2">
+            {{ user.address2|default:"Не вказано" }}
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <button type="button"
+            class="btn btn-success"
+            hx-get="{% url 'users:edit_account_details' %}"
+            hx-target="#account-details-container"
+            hx-swap="innerHTML">
+        <i class="bi bi-pencil me-2"></i>Редагувати
+    </button>
+</div>

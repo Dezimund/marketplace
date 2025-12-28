@@ -1,0 +1,47 @@
+<div class="product-card">
+    <div class="product-image-container">
+        {% if product.main_image %}
+        <img src="{{ product.main_image.url }}" class="product-image" alt="{{ product.name }}" loading="lazy">
+        {% else %}
+        <div class="product-image bg-light d-flex align-items-center justify-content-center">
+            <i class="bi bi-image text-muted" style="font-size: 48px;"></i>
+        </div>
+        {% endif %}
+
+        {% if product.old_price %}
+        <span class="product-badge bg-danger">-{{ product.discount_percent }}%</span>
+        {% elif product.is_new %}
+        <span class="product-badge bg-info">Новинка</span>
+        {% elif product.is_bestseller %}
+        <span class="product-badge bg-warning text-dark">ТОП</span>
+        {% endif %}
+
+        <button class="product-favorite"><i class="bi bi-heart"></i></button>
+    </div>
+    <div class="product-info">
+        <a href="{% url 'main:product_detail' product.slug %}"
+           class="product-title"
+           hx-get="{% url 'main:product_detail' product.slug %}"
+           hx-target="#main-content"
+           hx-push-url="true">
+            {{ product.name }}
+        </a>
+        <div class="product-availability">
+            <i class="bi bi-check-circle-fill me-1"></i>В наявності
+        </div>
+        <div class="product-price-container">
+            <span class="product-price">{{ product.price }} ₴</span>
+            {% if product.old_price %}
+            <span class="product-old-price">{{ product.old_price }} ₴</span>
+            {% endif %}
+        </div>
+        <button class="btn btn-buy"
+                hx-post="{% url 'cart:add_to_cart' product.slug %}"
+                hx-target="#cart-offcanvas-body"
+                hx-swap="innerHTML"
+                hx-vals='{"quantity": 1}'
+                hx-on::after-request="updateCartAfterAdd(event)">
+            <i class="bi bi-cart-plus me-1"></i>Купити
+        </button>
+    </div>
+</div>
