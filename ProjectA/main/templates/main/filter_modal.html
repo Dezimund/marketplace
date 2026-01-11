@@ -1,4 +1,3 @@
-<!-- Filter Modal - для мобільної версії -->
 <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen-sm-down">
         <div class="modal-content">
@@ -14,12 +13,10 @@
                       hx-push-url="true"
                       id="mobile-filter-form">
 
-                    <!-- Search Query (hidden) -->
                     {% if search_query %}
                     <input type="hidden" name="q" value="{{ search_query }}">
                     {% endif %}
 
-                    <!-- Category Filter -->
                     <div class="mb-4">
                         <h6 class="fw-bold mb-3">
                             <i class="bi bi-grid-3x3-gap me-2"></i>Категорія
@@ -47,7 +44,6 @@
                         </div>
                     </div>
 
-                    <!-- Price Filter -->
                     <div class="mb-4">
                         <h6 class="fw-bold mb-3">
                             <i class="bi bi-currency-exchange me-2"></i>Ціна, ₴
@@ -64,7 +60,6 @@
                         </div>
                     </div>
 
-                    <!-- Color Filter -->
                     <div class="mb-4">
                         <h6 class="fw-bold mb-3">
                             <i class="bi bi-palette me-2"></i>Колір
@@ -73,7 +68,6 @@
                                placeholder="Введіть колір" value="{{ filter_params.color }}">
                     </div>
 
-                    <!-- Size Filter -->
                     {% if sizes %}
                     <div class="mb-4">
                         <h6 class="fw-bold mb-3">
@@ -112,7 +106,6 @@
     </div>
 </div>
 
-<!-- Mobile Filter Button (можна додати в catalog.html) -->
 <style>
     @media (max-width: 991.98px) {
         .filter-sidebar {

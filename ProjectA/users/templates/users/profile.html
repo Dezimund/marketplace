@@ -86,7 +86,7 @@
                         
                         <!-- Account Details Container -->
                         <div id="account-details-container">
-                            {% include 'users/account_details.html' %}
+                            {% include 'users/partials/account_details.html' %}
                         </div>
                     </div>
 
@@ -132,7 +132,7 @@
                         <h4 class="fw-bold mb-4">
                             <i class="bi bi-box-seam text-success me-2"></i>Мої замовлення
                         </h4>
-                        
+
                         <div class="text-center py-5">
                             <i class="bi bi-inbox text-muted" style="font-size: 64px;"></i>
                             <h5 class="text-muted mt-3">Замовлень поки немає</h5>
@@ -150,7 +150,7 @@
                         <h4 class="fw-bold mb-4">
                             <i class="bi bi-heart text-success me-2"></i>Список бажань
                         </h4>
-                        
+
                         <div class="text-center py-5">
                             <i class="bi bi-heart text-muted" style="font-size: 64px;"></i>
                             <h5 class="text-muted mt-3">Список бажань порожній</h5>
@@ -170,7 +170,11 @@
                             <h4 class="fw-bold mb-0">
                                 <i class="bi bi-shop text-success me-2"></i>Мої товари
                             </h4>
-                            <a href="#" class="btn btn-success">
+                            <a href="{% url 'seller:product_create' %}"
+                               hx-get="{% url 'seller:product_create' %}"
+                               hx-target="#main-content"
+                               hx-push-url="true"
+                               class="btn btn-success">
                                 <i class="bi bi-plus-lg me-2"></i>Додати товар
                             </a>
                         </div>

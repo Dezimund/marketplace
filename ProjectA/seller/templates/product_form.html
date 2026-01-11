@@ -1,0 +1,10 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}{% if is_edit %}Редагувати{% else %}Додати{% endif %} товар — Маркетплейс{% endblock %}
+
+{% block content %}
+<div id="main-content">
+    {% include "seller/product_form_content.html" %}
+</div>
+{% endblock %}

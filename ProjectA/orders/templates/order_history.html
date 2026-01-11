@@ -1,0 +1,10 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Мої замовлення - Маркетплейс{% endblock %}
+
+{% block content %}
+<div id="main-content">
+    {% include "orders/order_history_content.html" %}
+</div>
+{% endblock content %}

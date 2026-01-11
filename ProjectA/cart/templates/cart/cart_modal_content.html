@@ -1,6 +1,4 @@
-<!-- Cart Modal Content - завантажується через HTMX -->
 {% if cart_items %}
-<!-- Cart Items List -->
 <div class="d-flex flex-column h-100">
     <div class="flex-grow-1 overflow-auto p-3" id="cart-items-list">
         <span class="d-none" id="cart-items-count">{{ cart.total_items }}</span>
@@ -9,15 +7,13 @@
         {% endfor %}
     </div>
 
-    <!-- Cart Footer -->
     <div class="border-top p-3 bg-light mt-auto">
-        <!-- Subtotal -->
+
         <div class="d-flex justify-content-between align-items-center mb-3">
             <span class="text-muted">Разом:</span>
             <span class="fs-4 fw-bold text-success" id="cart-subtotal">{{ cart.subtotal }} ₴</span>
         </div>
 
-        <!-- Promo Code -->
         <div class="mb-3">
             <div class="input-group input-group-sm">
                 <input type="text" class="form-control" placeholder="Промокод">
@@ -27,7 +23,6 @@
             </div>
         </div>
 
-        <!-- Actions -->
         <div class="d-grid gap-2">
             <a href="{% url 'cart:cart_summary' %}" class="btn btn-success btn-lg">
                 <i class="bi bi-credit-card me-2"></i>Оформити замовлення
@@ -42,7 +37,6 @@
             </button>
         </div>
 
-        <!-- Continue Shopping -->
         <div class="text-center mt-3">
             <a href="{% url 'main:catalog_all' %}"
                class="text-decoration-none text-muted"

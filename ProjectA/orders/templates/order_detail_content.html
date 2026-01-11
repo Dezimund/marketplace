@@ -1,0 +1,154 @@
+{% load static %}
+
+<main class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'main:index' %}"
+                   hx-get="{% url 'main:index' %}"
+                   hx-target="#main-content"
+                   hx-push-url="true"
+                   class="text-decoration-none">Головна</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'orders:history' %}"
+                   hx-get="{% url 'orders:history' %}"
+                   hx-target="#main-content"
+                   hx-push-url="true"
+                   class="text-decoration-none">Мої замовлення</a>
+            </li>
+            <li class="breadcrumb-item active">Замовлення #{{ order.id }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Order Info -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 fw-bold">Замовлення #{{ order.id }}</h4>
+                        {% if order.status == 'pending' %}
+                            <span class="badge bg-warning text-dark fs-6">Очікує</span>
+                        {% elif order.status == 'processing' %}
+                            <span class="badge bg-info fs-6">Обробляється</span>
+                        {% elif order.status == 'shipped' %}
+                            <span class="badge bg-primary fs-6">Відправлено</span>
+                        {% elif order.status == 'delivered' %}
+                            <span class="badge bg-success fs-6">Доставлено</span>
+                        {% elif order.status == 'cancelled' %}
+                            <span class="badge bg-danger fs-6">Скасовано</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Товари</h5>
+
+                    <div class="vstack gap-3">
+                        {% for item in items %}
+                        <div class="d-flex align-items-center p-3 bg-light rounded">
+                            <div class="me-3">
+                                {% if item.product.main_image %}
+                                <img src="{{ item.product.main_image.url }}"
+                                     alt="{{ item.product.name }}"
+                                     class="rounded"
+                                     style="width: 80px; height: 80px; object-fit: cover;">
+                                {% else %}
+                                <div class="rounded bg-secondary d-flex align-items-center justify-content-center"
+                                     style="width: 80px; height: 80px;">
+                                    <i class="bi bi-image text-white"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <a href="{% url 'main:product_detail' item.product.slug %}"
+                                       hx-get="{% url 'main:product_detail' item.product.slug %}"
+                                       hx-target="#main-content"
+                                       hx-push-url="true"
+                                       class="text-decoration-none text-dark">
+                                        {{ item.product.name }}
+                                    </a>
+                                </h6>
+                                {% if item.size %}
+                                <p class="text-muted small mb-1">Розмір: {{ item.size.size.name }}</p>
+                                {% endif %}
+                                <p class="text-muted small mb-0">Кількість: {{ item.quantity }}</p>
+                            </div>
+
+                            <div class="text-end">
+                                <p class="fw-bold mb-0">{{ item.get_total_price }} ₴</p>
+                                <p class="text-muted small mb-0">{{ item.price }} ₴ × {{ item.quantity }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Інформація</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-3">
+                        <p class="text-muted small mb-1">Дата замовлення</p>
+                        <p class="fw-medium mb-0">{{ order.created_at|date:"d.m.Y H:i" }}</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <p class="text-muted small mb-1">Спосіб оплати</p>
+                        <p class="fw-medium mb-0">{{ order.get_payment_provider_display|default:"Не вказано" }}</p>
+                    </div>
+
+                    <hr>
+
+                    <div class="mb-3">
+                        <p class="text-muted small mb-1">Отримувач</p>
+                        <p class="fw-medium mb-0">{{ order.first_name }} {{ order.last_name }}</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <p class="text-muted small mb-1">Email</p>
+                        <p class="fw-medium mb-0">{{ order.email }}</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <p class="text-muted small mb-1">Телефон</p>
+                        <p class="fw-medium mb-0">{{ order.phone_number|default:"-" }}</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <p class="text-muted small mb-1">Адреса доставки</p>
+                        <p class="fw-medium mb-0">
+                            {% if order.country %}{{ order.country }}, {% endif %}
+                            {% if order.city %}{{ order.city }}, {% endif %}
+                            {% if order.address1 %}{{ order.address1 }}{% endif %}
+                            {% if order.address2 %}, {{ order.address2 }}{% endif %}
+                            {% if order.postal_code %}, {{ order.postal_code }}{% endif %}
+                        </p>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 mb-0">Разом:</span>
+                        <span class="h4 mb-0 text-success fw-bold">{{ order.total_price }} ₴</span>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{% url 'orders:history' %}"
+               hx-get="{% url 'orders:history' %}"
+               hx-target="#main-content"
+               hx-push-url="true"
+               class="btn btn-outline-dark w-100">
+                <i class="bi bi-arrow-left me-2"></i>До списку замовлень
+            </a>
+        </div>
+    </div>
+</main>

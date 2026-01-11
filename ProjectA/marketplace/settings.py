@@ -13,10 +13,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import os
 from unittest.mock import DEFAULT
-
 from django.conf.global_settings import DEFAULT_AUTO_FIELD, MEDIA_URL, SESSION_COOKIE_AGE, SESSION_SAVE_EVERY_REQUEST, \
     AUTH_USER_MODEL
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
@@ -33,7 +33,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'project_a', 'project-a', '*']
 
 
 # Application definition
@@ -49,9 +49,19 @@ INSTALLED_APPS = [
     'main',
     'cart',
     'users',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
+    'corsheaders',
+    'api',
+    'reviews',
+    'orders',
+
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'api.middleware.DisableCSRFForAPI',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -136,6 +146,31 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
@@ -150,7 +185,32 @@ AUTH_USER_MODEL = 'users.CustomUser'
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+}
+
+from django.http.request import HttpRequest
+
+_original_get_host = HttpRequest.get_host
+
+def _patched_get_host(self):
+    host = self.META.get('HTTP_HOST', '') or self.META.get('SERVER_NAME', '')
+    if '_' in host:
+        return host.split(':')[0]
+    return _original_get_host(self)
+
+HttpRequest.get_host = _patched_get_host
+
 

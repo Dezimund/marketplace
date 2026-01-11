@@ -26,7 +26,6 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractUser):
-    # Вимикаємо username
     username = None
 
     email = models.EmailField(unique=True, max_length=255)
@@ -48,8 +47,8 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
     class Meta:
-        verbose_name = 'Користувач'
-        verbose_name_plural = 'Користувачі'
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
 
     def __str__(self):
         return self.email

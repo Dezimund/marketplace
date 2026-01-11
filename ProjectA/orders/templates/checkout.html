@@ -1,0 +1,30 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Оформлення замовлення - Маркетплейс{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-control:focus,
+    .form-select:focus,
+    .form-check-input:focus {
+        border-color: #000;
+        box-shadow: none;
+    }
+
+    .payment-button {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .payment-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+<div id="main-content">
+    {% include "orders/checkout_content.html" %}
+</div>
+{% endblock content %}

@@ -6,18 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Маркетплейс{% endblock %}</title>
 
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
-    <!-- HTMX CSRF Configuration -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.body.addEventListener('htmx:configRequest', function(event) {
-                // Отримуємо CSRF токен з cookie
                 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value
                     || getCookie('csrftoken');
                 if (csrfToken) {
@@ -58,7 +53,6 @@
             min-height: 100vh;
         }
 
-        /* Header Styles */
         .header-top {
             background-color: white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
@@ -78,7 +72,6 @@
             color: var(--prom-green-hover);
         }
 
-        /* Search Bar */
         .search-container {
             flex: 1;
             max-width: 600px;
@@ -111,7 +104,6 @@
             color: white;
         }
 
-        /* Header Icons */
         .header-icon {
             display: flex;
             flex-direction: column;
@@ -158,7 +150,6 @@
             display: none;
         }
 
-        /* Categories Navigation */
         .categories-nav {
             background-color: white;
             border-bottom: 1px solid var(--prom-border);
@@ -200,12 +191,10 @@
             font-weight: 500;
         }
 
-        /* Main Content */
         .main-content {
             padding: 24px 0;
         }
 
-        /* Product Cards */
         .product-card {
             background: white;
             border-radius: 12px;
@@ -251,6 +240,11 @@
             border-radius: 4px;
             font-size: 12px;
             font-weight: 500;
+            z-index: 2;
+            max-width: calc(100% - 60px);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .product-favorite {
@@ -354,7 +348,6 @@
             color: white;
         }
 
-        /* Sidebar Filters */
         .filter-sidebar {
             background: white;
             border-radius: 12px;
@@ -430,7 +423,6 @@
             color: white;
         }
 
-        /* Breadcrumbs */
         .breadcrumb {
             background: transparent;
             padding: 0;
@@ -450,7 +442,6 @@
             color: var(--prom-dark);
         }
 
-        /* Footer */
         .footer {
             background-color: white;
             padding: 40px 0 20px;
@@ -483,7 +474,6 @@
             margin-top: 30px;
         }
 
-        /* Mobile Responsive */
         @media (max-width: 768px) {
             .header-icon span {
                 display: none;
@@ -500,7 +490,6 @@
             }
         }
 
-        /* Loading States */
         .htmx-indicator {
             display: none;
         }
@@ -524,7 +513,6 @@
             100% { background-position: -200% 0; }
         }
 
-        /* Dropdown Menu */
         .dropdown-menu {
             border: none;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
@@ -541,7 +529,6 @@
             background-color: var(--prom-gray);
         }
 
-        /* Sort Dropdown */
         .sort-dropdown {
             border: 1px solid var(--prom-border);
             border-radius: 8px;

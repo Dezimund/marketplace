@@ -1,6 +1,3 @@
-<!-- Catalog Template - завантажується через HTMX -->
-
-<!-- Breadcrumbs -->
 <nav aria-label="breadcrumb" class="mb-3">
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
@@ -29,7 +26,6 @@
     </ol>
 </nav>
 
-<!-- Page Title -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">
         {% if current_category %}
@@ -47,7 +43,6 @@
 </div>
 
 <div class="row">
-    <!-- Sidebar Filters -->
     <div class="col-lg-3 mb-4">
         <div class="filter-sidebar">
             <h5 class="filter-title">
@@ -63,7 +58,6 @@
                 <input type="hidden" name="q" value="{{ search_query }}">
                 {% endif %}
 
-                <!-- Price Filter -->
                 <div class="filter-section">
                     <h6 class="filter-section-title">Ціна, ₴</h6>
                     <div class="price-inputs">
@@ -75,14 +69,12 @@
                     </div>
                 </div>
 
-                <!-- Color Filter -->
                 <div class="filter-section">
                     <h6 class="filter-section-title">Колір</h6>
                     <input type="text" name="color" class="form-control"
                            placeholder="Введіть колір" value="{{ filter_params.color }}">
                 </div>
 
-                <!-- Size Filter -->
                 {% if sizes %}
                 <div class="filter-section">
                     <h6 class="filter-section-title">Розмір</h6>
@@ -113,7 +105,6 @@
             </form>
         </div>
 
-        <!-- Categories -->
         <div class="filter-sidebar mt-4">
             <h5 class="filter-title"><i class="bi bi-list me-2"></i>Категорії</h5>
             <ul class="list-unstyled mb-0">
@@ -142,9 +133,7 @@
         </div>
     </div>
 
-    <!-- Products Grid -->
     <div class="col-lg-9">
-        <!-- Sort Bar -->
         <div class="bg-white rounded-3 p-3 mb-4 d-flex justify-content-between align-items-center">
             <div class="d-flex gap-2 align-items-center">
                 <span class="text-muted me-2">Сортування:</span>
@@ -162,7 +151,6 @@
             </div>
         </div>
 
-        <!-- Products -->
         <div class="row g-3" id="products-grid">
             {% for product in products %}
             <div class="col-6 col-md-4 col-xl-3">
@@ -212,7 +200,6 @@
                             {% endif %}
                         </div>
 
-                        <!-- Add to Cart Button with HTMX -->
                         <button class="btn btn-buy"
                                 hx-post="{% url 'cart:add_to_cart' product.slug %}"
                                 hx-target="#cart-offcanvas-body"

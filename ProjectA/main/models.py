@@ -1,5 +1,9 @@
 from django.db import models
 from django.utils.text import slugify
+from reviews.models import Review
+from django.db.models import Avg, Count, Sum
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 
 class Category(models.Model):
@@ -9,7 +13,7 @@ class Category(models.Model):
 
     class Meta:
         verbose_name = 'Category'
-        verbose_name_plural = 'Categorys'
+        verbose_name_plural = 'Categories'
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -45,15 +49,15 @@ class Product(models.Model):
                                     blank=True, verbose_name='Old price')
     description = models.TextField(blank=False, verbose_name='Description')
     main_image = models.ImageField(upload_to='products/main/', verbose_name='Main image')
-
-    # Нові поля для рекомендацій та популярності
     is_recommended = models.BooleanField(default=False, verbose_name='Recommended')
     is_bestseller = models.BooleanField(default=False, verbose_name='Bestseller')
     is_new = models.BooleanField(default=True, verbose_name='New')
     views_count = models.PositiveIntegerField(default=0, verbose_name='Views count')
-
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated')
+    rating = models.DecimalField(max_digits=2, decimal_places=1, default=0, verbose_name='Rating')
+    reviews_count = models.PositiveIntegerField(default=0, verbose_name='Quantity of reviews')
+    stock = models.PositiveIntegerField(default=0,verbose_name='Quantity in warehouse')
 
     class Meta:
         verbose_name = 'Product'
@@ -74,6 +78,23 @@ class Product(models.Model):
             return int(100 - (self.price / self.old_price * 100))
         return 0
 
+    def update_rating(self):
+        stats = self.reviews.filter(is_approved=True).aggregate(
+            avg_rating = Avg('rating'),
+            count = Count('id')
+        )
+        self.rating = stats['avg_rating'] or 0
+        self.reviews_count = stats['count']
+        self.save(update_fields=['rating', 'reviews_count'])
+
+    def update_stock_from_sizes(self):
+        if self.category and self.category.requires_size:
+            total_stock = self.product_sizes.aggregate(
+                total=Sum('stock')
+            )['total'] or 0
+            self.stock = total_stock
+            self.save(update_fields=['stock'])
+
 
 class ProductSize(models.Model):
     product = models.ForeignKey('Product', on_delete=models.CASCADE,
@@ -87,6 +108,25 @@ class ProductSize(models.Model):
 
     def __str__(self):
         return f"{self.size.name} ({self.stock} pcs.) for {self.product.name}"
+
+@receiver(post_save, sender=ProductSize)
+def update_product_stock_on_save(sender, instance, **kwargs):
+    if instance.product.category and instance.product.category.requires_size:
+        total_stock = instance.product.product_sizes.aggregate(
+            total=Sum('stock')
+        )['total'] or 0
+        Product.objects.filter(pk=instance.product.pk).update(stock=total_stock)
+
+@receiver(post_delete, sender=ProductSize)
+def update_product_stock_on_delete(sender, instance, **kwargs):
+    try:
+        if instance.product.category and instance.product.category.requires_size:
+            total_stock = instance.product.product_sizes.aggregate(
+                total=Sum('stock')
+            )['total'] or 0
+            Product.objects.filter(pk=instance.product.pk).update(stock=total_stock)
+    except Product.DoesNotExist:
+        pass
 
 
 class ProductImage(models.Model):

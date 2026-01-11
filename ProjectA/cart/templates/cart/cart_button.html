@@ -1,4 +1,3 @@
-<!-- Cart Button - кнопка кошика для хедера -->
 <a href="#"
    class="header-icon position-relative"
    data-bs-toggle="offcanvas"
@@ -36,7 +35,6 @@
 </style>
 
 <script>
-// Оновлення лічильника кошика
 function updateCartBadge(count) {
     const badge = document.getElementById('cart-badge');
     if (badge) {
@@ -45,7 +43,6 @@ function updateCartBadge(count) {
     }
 }
 
-// Слухаємо подію оновлення кошика
 document.body.addEventListener('cart-updated', function(e) {
     if (e.detail && e.detail.total_items !== undefined) {
         updateCartBadge(e.detail.total_items);

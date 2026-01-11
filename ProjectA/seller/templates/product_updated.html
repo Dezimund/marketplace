@@ -1,0 +1,35 @@
+{% load static %}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="bg-white rounded-4 p-5 shadow-sm text-center">
+                <div class="mb-4">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 80px;"></i>
+                </div>
+
+                <h3 class="fw-bold mb-3">Зміни збережено!</h3>
+                <p class="text-muted mb-4">
+                    Товар "{{ product.name }}" успішно оновлено.
+                </p>
+
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="{% url 'main:product_detail' product.slug %}"
+                       hx-get="{% url 'main:product_detail' product.slug %}"
+                       hx-target="#main-content"
+                       hx-push-url="true"
+                       class="btn btn-outline-success">
+                        <i class="bi bi-eye me-2"></i>Переглянути товар
+                    </a>
+                    <a href="{% url 'seller:product_list' %}"
+                       hx-get="{% url 'seller:product_list' %}"
+                       hx-target="#main-content"
+                       hx-push-url="true"
+                       class="btn btn-success">
+                        <i class="bi bi-list me-2"></i>До списку товарів
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

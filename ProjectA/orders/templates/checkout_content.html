@@ -1,0 +1,256 @@
+{% load static %}
+
+<main class="container py-5">
+    <div class="row g-5">
+        <div class="col-lg-7">
+            <div class="d-flex flex-column gap-4">
+
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'main:index' %}"
+                               hx-get="{% url 'main:index' %}"
+                               hx-target="#main-content"
+                               hx-push-url="true"
+                               class="text-decoration-none text-muted hover-dark">Головна</a>
+                        </li>
+                        <li class="breadcrumb-item active fw-bold" aria-current="page">Оформлення замовлення</li>
+                    </ol>
+                </nav>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h2 class="h5 fw-bold text-dark mb-4">Контактна інформація</h2>
+
+                        <form method="post" id="order-form"
+                              hx-post="{% url 'orders:checkout' %}"
+                              hx-target="#main-content"
+                              hx-swap="innerHTML">
+                            {% csrf_token %}
+
+                            <div class="mb-4">
+                                <div class="mb-3">
+                                    <label for="id_email" class="form-label fw-medium">Email</label>
+                                    <div class="input-group">
+                                        {{ form.email }}
+                                    </div>
+                                    {% if form.email.errors %}
+                                        <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="newsletter" class="form-check-input border-dark" id="newsletter">
+                                    <label class="form-check-label small text-dark" for="newsletter">
+                                        Отримувати новини та пропозиції
+                                    </label>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <h2 class="h5 fw-bold text-dark mb-4">Адреса доставки</h2>
+                            <div class="vstack gap-3">
+                                <div>
+                                    <label for="id_country" class="form-label fw-medium">Країна</label>
+                                    {{ form.country }}
+                                    {% if form.country.errors %}
+                                        <div class="text-danger small mt-1">{{ form.country.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="id_first_name" class="form-label fw-medium">Ім'я</label>
+                                        {{ form.first_name }}
+                                        {% if form.first_name.errors %}
+                                            <div class="text-danger small mt-1">{{ form.first_name.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="id_last_name" class="form-label fw-medium">Прізвище</label>
+                                        {{ form.last_name }}
+                                        {% if form.last_name.errors %}
+                                            <div class="text-danger small mt-1">{{ form.last_name.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="position-relative">
+                                    <label for="id_address1" class="form-label fw-medium">Адреса</label>
+                                    {{ form.address1 }}
+                                    {% if form.address1.errors %}
+                                        <div class="text-danger small mt-1">{{ form.address1.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div>
+                                    <label for="id_address2" class="form-label fw-medium">Квартира, офіс (опціонально)</label>
+                                    {{ form.address2 }}
+                                    {% if form.address2.errors %}
+                                        <div class="text-danger small mt-1">{{ form.address2.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-4">
+                                        <label for="id_city" class="form-label fw-medium">Місто</label>
+                                        {{ form.city }}
+                                        {% if form.city.errors %}
+                                            <div class="text-danger small mt-1">{{ form.city.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="id_state" class="form-label fw-medium">Область</label>
+                                        {{ form.state }}
+                                        {% if form.state.errors %}
+                                            <div class="text-danger small mt-1">{{ form.state.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="id_postal_code" class="form-label fw-medium">Індекс</label>
+                                        {{ form.postal_code }}
+                                        {% if form.postal_code.errors %}
+                                            <div class="text-danger small mt-1">{{ form.postal_code.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="position-relative">
+                                    <label for="id_phone_number" class="form-label fw-medium">Телефон</label>
+                                    {{ form.phone_number }}
+                                    {% if form.phone_number.errors %}
+                                        <div class="text-danger small mt-1">{{ form.phone_number.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-check mt-2">
+                                    <input type="checkbox" name="save_info" class="form-check-input border-dark" id="saveInfo">
+                                    <label class="form-check-label small text-dark" for="saveInfo">
+                                        Зберегти інформацію для наступних замовлень
+                                    </label>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="payment_provider" id="payment_provider" value="">
+
+                            <div class="row g-3 mt-4">
+                                <div class="col-6">
+                                    <button type="submit"
+                                            class="btn btn-success w-100 py-3 fw-bold payment-button"
+                                            data-provider="visa">
+                                        <i class="bi bi-credit-card me-2"></i>Visa/Mastercard
+                                    </button>
+                                </div>
+                                <div class="col-6">
+                                    <button type="submit"
+                                            class="btn btn-warning w-100 py-3 fw-bold payment-button text-dark"
+                                            data-provider="privat24">
+                                        <i class="bi bi-bank me-2"></i>Приват24
+                                    </button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <a href="#" class="small text-muted text-decoration-underline link-dark">Політика повернення</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm sticky-top" style="top: 100px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Ваше замовлення</h5>
+
+                    <div class="vstack gap-3 mb-4">
+                        {% for item in cart_items %}
+                            <div class="d-flex align-items-center position-relative">
+                                <div class="position-relative me-3">
+                                    {% if item.product.main_image %}
+                                    <img src="{{ item.product.main_image.url }}"
+                                         alt="{{ item.product.name }}"
+                                         class="rounded bg-light"
+                                         style="width: 64px; height: 64px; object-fit: cover;">
+                                    {% else %}
+                                    <div class="rounded bg-light d-flex align-items-center justify-content-center"
+                                         style="width: 64px; height: 64px;">
+                                        <i class="bi bi-image text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary text-white" style="font-size: 0.75rem;">
+                                        {{ item.quantity }}
+                                    </span>
+                                </div>
+
+                                <div class="flex-grow-1">
+                                    <h3 class="h6 mb-0 fw-medium">{{ item.product.name }}</h3>
+                                    {% if item.product_size %}
+                                    <p class="small text-muted mb-0">Розмір: {{ item.product_size.size.name }}</p>
+                                    {% endif %}
+                                </div>
+
+                                <div class="text-end fw-medium">
+                                    {{ item.product.price }} ₴
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted">Кошик порожній</p>
+                        {% endfor %}
+                    </div>
+
+                    <div id="order-summary" class="border-top pt-3">
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span>Товарів: {{ cart.total_items }} шт.</span>
+                            <span>{{ total_price }} ₴</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-3 small">
+                            <span>Доставка</span>
+                            <span class="text-muted">Розраховується окремо</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                            <span class="h5 mb-0">Разом</span>
+                            <div class="text-end">
+                                <span class="small text-muted me-1">UAH</span>
+                                <span class="h5 mb-0 text-success fw-bold">{{ total_price }} ₴</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const paymentButtons = document.querySelectorAll('.payment-button');
+        const paymentProviderInput = document.getElementById('payment_provider');
+
+        paymentButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const provider = this.dataset.provider;
+                paymentProviderInput.value = provider;
+            });
+        });
+    });
+
+    // Для HTMX - повторна ініціалізація після завантаження
+    document.body.addEventListener('htmx:afterSettle', function(event) {
+        const paymentButtons = document.querySelectorAll('.payment-button');
+        const paymentProviderInput = document.getElementById('payment_provider');
+
+        if (paymentButtons.length > 0 && paymentProviderInput) {
+            paymentButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const provider = this.dataset.provider;
+                    paymentProviderInput.value = provider;
+                });
+            });
+        }
+    });
+</script>

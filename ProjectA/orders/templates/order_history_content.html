@@ -1,0 +1,94 @@
+{% load static %}
+
+<main class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'main:index' %}"
+                   hx-get="{% url 'main:index' %}"
+                   hx-target="#main-content"
+                   hx-push-url="true"
+                   class="text-decoration-none">Головна</a>
+            </li>
+            <li class="breadcrumb-item active">Мої замовлення</li>
+        </ol>
+    </nav>
+
+    <h2 class="fw-bold mb-4">Мої замовлення</h2>
+
+    {% if orders %}
+        <div class="row g-4">
+            {% for order in orders %}
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                            <div>
+                                <h5 class="fw-bold mb-2">
+                                    Замовлення #{{ order.id }}
+                                </h5>
+                                <p class="text-muted mb-2">
+                                    <i class="bi bi-calendar me-1"></i>
+                                    {{ order.created_at|date:"d.m.Y H:i" }}
+                                </p>
+                                <p class="mb-0">
+                                    {% if order.status == 'pending' %}
+                                        <span class="badge bg-warning text-dark">Очікує</span>
+                                    {% elif order.status == 'processing' %}
+                                        <span class="badge bg-info">Обробляється</span>
+                                    {% elif order.status == 'shipped' %}
+                                        <span class="badge bg-primary">Відправлено</span>
+                                    {% elif order.status == 'delivered' %}
+                                        <span class="badge bg-success">Доставлено</span>
+                                    {% elif order.status == 'cancelled' %}
+                                        <span class="badge bg-danger">Скасовано</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <div class="text-end">
+                                <p class="h4 fw-bold text-success mb-2">{{ order.total_price }} ₴</p>
+                                <p class="text-muted small mb-0">
+                                    {{ order.items.count }} товар{{ order.items.count|pluralize:"а,ів" }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <hr class="my-3">
+
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div class="text-muted small">
+                                <i class="bi bi-geo-alt me-1"></i>
+                                {% if order.city %}{{ order.city }}{% endif %}
+                                {% if order.address1 %}, {{ order.address1 }}{% endif %}
+                            </div>
+
+                            <a href="{% url 'orders:detail' order.id %}"
+                               hx-get="{% url 'orders:detail' order.id %}"
+                               hx-target="#main-content"
+                               hx-push-url="true"
+                               class="btn btn-outline-dark btn-sm">
+                                <i class="bi bi-eye me-1"></i>Деталі
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="bi bi-bag-x text-muted" style="font-size: 80px;"></i>
+            </div>
+            <h4 class="text-muted mb-4">У вас ще немає замовлень</h4>
+            <a href="{% url 'main:index' %}"
+               hx-get="{% url 'main:index' %}"
+               hx-target="#main-content"
+               hx-push-url="true"
+               class="btn btn-success btn-lg">
+                <i class="bi bi-cart me-2"></i>Почати покупки
+            </a>
+        </div>
+    {% endif %}
+</main>
