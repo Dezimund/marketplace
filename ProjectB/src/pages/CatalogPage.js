@@ -14,7 +14,6 @@ function CatalogPage() {
   const [currentCategory, setCurrentCategory] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Filters
   const [minPrice, setMinPrice] = useState(searchParams.get('min_price') || '');
   const [maxPrice, setMaxPrice] = useState(searchParams.get('max_price') || '');
   const [color, setColor] = useState(searchParams.get('color') || '');
@@ -27,11 +26,9 @@ function CatalogPage() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Fetch categories
         const categoriesRes = await categoriesAPI.getAll();
         setCategories(categoriesRes.data);
 
-        // Fetch sizes
         try {
           const sizesRes = await api.get('/sizes/');
           setSizes(sizesRes.data || []);
@@ -39,7 +36,6 @@ function CatalogPage() {
           console.log('Sizes not available');
         }
 
-        // Find current category
         if (categorySlug) {
           const cat = categoriesRes.data.find(c => c.slug === categorySlug);
           setCurrentCategory(cat);
@@ -47,7 +43,6 @@ function CatalogPage() {
           setCurrentCategory(null);
         }
 
-        // Build query params
         const params = {};
         if (categorySlug) params.category_slug = categorySlug;
         if (searchQuery) params.search = searchQuery;
@@ -57,7 +52,6 @@ function CatalogPage() {
         if (size) params.size = size;
         if (inStock) params.in_stock = 'true';
 
-        // Sorting
         switch (sort) {
           case 'price_asc':
             params.ordering = 'price';
@@ -135,7 +129,6 @@ function CatalogPage() {
         </ol>
       </nav>
 
-      {/* Page Title */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="h3 mb-0">
           {currentCategory ? currentCategory.name : 'Всі товари'}
@@ -177,7 +170,6 @@ function CatalogPage() {
                 </div>
               </div>
 
-              {/* Color Filter */}
               <div className="filter-section">
                 <h6 className="filter-section-title">Колір</h6>
                 <input
@@ -189,7 +181,6 @@ function CatalogPage() {
                 />
               </div>
 
-              {/* Size Filter - показуємо якщо категорія потребує розмірів або на головній */}
               {(currentCategory?.requires_size || !categorySlug) && sizes.length > 0 && (
                 <div className="filter-section">
                   <h6 className="filter-section-title">Розмір</h6>
@@ -206,7 +197,6 @@ function CatalogPage() {
                 </div>
               )}
 
-              {/* In Stock Filter */}
               <div className="filter-section">
                 <div className="form-check">
                   <input
@@ -236,7 +226,6 @@ function CatalogPage() {
             </form>
           </div>
 
-          {/* Categories */}
           <div className="filter-sidebar mt-4">
             <h5 className="filter-title">
               <i className="bi bi-list me-2"></i>Категорії
@@ -266,9 +255,7 @@ function CatalogPage() {
           </div>
         </div>
 
-        {/* Products Grid */}
         <div className="col-lg-9">
-          {/* Sort Bar */}
           <div className="bg-white rounded-3 p-3 mb-4 d-flex justify-content-between align-items-center">
             <div className="d-flex gap-2 align-items-center">
               <span className="text-muted me-2">Сортування:</span>
@@ -286,7 +273,6 @@ function CatalogPage() {
             </div>
           </div>
 
-          {/* Products */}
           {loading ? (
             <div className="loading-spinner">
               <div className="spinner-border text-success" role="status">

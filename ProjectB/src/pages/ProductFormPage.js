@@ -28,7 +28,6 @@ const ProductFormPage = () => {
     const [errors, setErrors] = useState({});
     const [mainImage, setMainImage] = useState(null);
 
-    // Перевірка чи обрана категорія потребує розмірів
     const selectedCategory = categories.find(c => c.id === parseInt(formData.category));
     const requiresSize = selectedCategory?.requires_size || false;
 
@@ -85,7 +84,6 @@ const ProductFormPage = () => {
                 is_recommended: product.is_recommended || false,
             });
             
-            // Завантажуємо розміри товару
             if (product.product_sizes && product.product_sizes.length > 0) {
                 setProductSizes(product.product_sizes.map(ps => ({
                     size_id: ps.size?.id || ps.size_id,
@@ -118,7 +116,6 @@ const ProductFormPage = () => {
         }
     };
 
-    // Управління розмірами
     const handleAddSize = () => {
         setProductSizes([...productSizes, { size_id: '', size_name: '', stock: 0 }]);
     };
@@ -145,8 +142,7 @@ const ProductFormPage = () => {
         setProductSizes(newSizes);
     };
 
-    // Підрахунок загальної кількості
-    const totalStock = requiresSize 
+    const totalStock = requiresSize
         ? productSizes.reduce((sum, ps) => sum + (parseInt(ps.stock) || 0), 0)
         : parseInt(formData.stock) || 0;
 
@@ -164,7 +160,6 @@ const ProductFormPage = () => {
             if (formData.description) data.append('description', formData.description);
             if (formData.color) data.append('color', formData.color);
             
-            // Для товарів без розмірів - відправляємо stock
             if (!requiresSize) {
                 data.append('stock', formData.stock || '0');
             }
@@ -175,7 +170,6 @@ const ProductFormPage = () => {
                 data.append('main_image', mainImage);
             }
 
-            // Для товарів з розмірами - відправляємо sizes як JSON
             if (requiresSize && productSizes.length > 0) {
                 data.append('sizes', JSON.stringify(productSizes.filter(ps => ps.size_id)));
             }
@@ -230,7 +224,6 @@ const ProductFormPage = () => {
                     )}
 
                     <form onSubmit={handleSubmit}>
-                        {/* Основна інформація */}
                         <div className="mb-4">
                             <h6 className="fw-bold text-muted mb-3">
                                 <i className="bi bi-info-circle me-1"></i>Основна інформація
@@ -314,7 +307,6 @@ const ProductFormPage = () => {
                             </div>
                         </div>
 
-                        {/* Характеристики */}
                         <div className="mb-4">
                             <h6 className="fw-bold text-muted mb-3">
                                 <i className="bi bi-list-check me-1"></i>Характеристики
@@ -333,7 +325,6 @@ const ProductFormPage = () => {
                                     />
                                 </div>
                                 
-                                {/* Кількість для товарів БЕЗ розмірів */}
                                 {!requiresSize && (
                                     <div className="col-md-6 mb-3">
                                         <label className="form-label">Кількість в наявності *</label>
@@ -369,7 +360,6 @@ const ProductFormPage = () => {
                             </div>
                         </div>
 
-                        {/* Розміри - тільки для категорій з requires_size */}
                         {requiresSize && (
                             <div className="mb-4">
                                 <h6 className="fw-bold text-muted mb-3">
@@ -437,7 +427,6 @@ const ProductFormPage = () => {
                             </div>
                         )}
 
-                        {/* Зображення */}
                         <div className="mb-4">
                             <h6 className="fw-bold text-muted mb-3">
                                 <i className="bi bi-images me-1"></i>Зображення
@@ -455,7 +444,6 @@ const ProductFormPage = () => {
                             </div>
                         </div>
 
-                        {/* Кнопки */}
                         <div className="d-flex gap-3">
                             <button 
                                 type="submit" 

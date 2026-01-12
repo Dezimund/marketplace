@@ -30,7 +30,6 @@ function HomePage() {
         setNewProducts(newRes.data);
         setBestsellers(bestsellersRes.data);
 
-        // ML Recommendations
         try {
           const trendingRes = await api.get('/recommendations/?type=trending&limit=6');
           setTrending(trendingRes.data.products || []);
@@ -38,7 +37,6 @@ function HomePage() {
           console.log('Trending not available');
         }
 
-        // Персоналізовані рекомендації для авторизованого користувача
         if (isAuthenticated) {
           try {
             const forYouRes = await api.get('/recommendations/?type=for_user&limit=6');
