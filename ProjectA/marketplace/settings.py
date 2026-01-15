@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'api',
     'reviews',
     'orders',
+    'logs',
 
 ]
 
@@ -70,7 +71,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'cart.middleware.CartMiddleware'
+    'cart.middleware.CartMiddleware',
+    'logs.middleware.ActionLogMiddleware',
 ]
 
 ROOT_URLCONF = 'marketplace.urls'
